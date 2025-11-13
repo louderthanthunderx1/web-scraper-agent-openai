@@ -2,10 +2,10 @@
 
 ### Installation
 
-``
+```
 Install uv
 pip install uv
-``
+```
 
 ### Install dependencies
 ```
