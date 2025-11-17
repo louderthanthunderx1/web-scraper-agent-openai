@@ -1,12 +1,28 @@
 import requests
 from bs4 import BeautifulSoup
+from config.settings import DATAFORTHAI_REQUIRES_LOGIN
+
+
+def get_session():
+    """
+    สร้าง session สำหรับ requests
+    หมายเหตุ: DataForThai ใช้ Google OAuth login ซึ่งไม่สามารถทำได้ด้วย requests
+    ถ้าต้องการ login ต้องใช้ dataforthai_playwright.py แทน
+    """
+    session = requests.Session()
+    session.headers.update({"User-Agent": "Mozilla/5.0"})
+    
+    if DATAFORTHAI_REQUIRES_LOGIN:
+        print("Warning: Login is required but dataforthai_crawl.py doesn't support Google OAuth login.")
+        print("Please use dataforthai_playwright.py instead for login functionality.")
+    
+    return session
 
 
 def crawl_dft(tax_id: str):
     url = f"https://www.dataforthai.com/company/{tax_id}/"
-    r = requests.get(url, headers={
-        "User-Agent": "Mozilla/5.0"
-    })
+    session = get_session()
+    r = session.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
 
     # ชื่อบริษัท
@@ -34,7 +50,8 @@ def crawl_dft(tax_id: str):
 
 def crawl_dft_clean(tax_id: str):
     url = f"https://www.dataforthai.com/company/{tax_id}/"
-    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+    session = get_session()
+    r = session.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
 
     # -------------------------
